@@ -1,0 +1,92 @@
+---
+#change ansible.cnf file to allow connection without key exchange
+#run ansible command to debug (you can add -vvv to have verbose):
+#ansible-playbook -i hosts ~/ansible/playbooks/playbook.yml -u aviberger --step
+
+- name: Deploy Weight Tracker
+  hosts: webservers 
+
+  tasks:
+    - name: Creates directory
+      file:
+        path: /home/aviberger/bootcamp-app
+        state: directory
+
+    - name: Update apt-get repo and cache
+      become: yes
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+    - name: Upgrade all apt packages
+      become: yes
+      apt: upgrade=dist force_apt_get=yes
+
+    - name: clone of a single branch
+      ansible.builtin.git:
+        repo: https://github.com/entebox/bootcamp-app.git
+        dest: /home/aviberger/bootcamp-app
+        clone: yes
+        update: yes
+        single_branch: yes
+        version: week5-bonusB ###change branch to the one that fits okta credentials 
+
+    - name: Add repository
+      shell: curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+      args:
+        warn: no
+
+    - name: Install nodejs
+      become: yes
+      apt:
+        update_cache: yes
+        name: nodejs
+        state: present
+
+    - name: install dependencies
+      become: yes
+      command: "npm install {{ item }}"
+      args:
+        chdir: /home/aviberger/bootcamp-app
+      with_items:
+        - '@hapi/hapi@19'
+        - '@hapi/bell@12' 
+        - '@hapi/boom@9'
+        - '@hapi/cookie@11' 
+        - '@hapi/inert@6'
+        - '@hapi/joi@17' 
+        - '@hapi/vision@6' 
+        - 'dotenv@8'
+        - 'ejs@3' 
+        - 'postgres@1'
+
+    - name: install nodemon
+      become: yes
+      command: "npm install --save-dev nodemon@2"
+      args:
+        chdir: /home/aviberger/bootcamp-app
+
+    - name: initiate npm on working folder
+      shell: npm init -y
+      args:
+        chdir: /home/aviberger/bootcamp-app
+
+    - name: initiate the database
+      command: 'npm run initdb'
+      args:
+        chdir: /home/aviberger/bootcamp-app
+
+    - name: install PM2
+      become: yes
+      command: "npm install pm2 -g"
+      args:
+        chdir: /home/aviberger/bootcamp-app
+
+    - name: run the application
+      command: 'pm2 start "npm run dev" --name weight_tracker'
+      args:
+        chdir: /home/aviberger/bootcamp-app
+
+    - name: make weight_tracker start at system restart
+      become: yes
+      command: pm2 startup systemd
+      environment:
+        PATH: "{{ ansible_env.PATH }}"

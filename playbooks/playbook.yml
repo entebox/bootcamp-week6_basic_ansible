@@ -90,3 +90,7 @@
       command: pm2 startup systemd
       environment:
         PATH: "{{ ansible_env.PATH }}"
+        
+    - name: Save PM2 configuration
+      command: pm2 save
+      when: pm2_config_apps == True

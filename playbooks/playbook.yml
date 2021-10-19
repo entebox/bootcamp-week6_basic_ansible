@@ -85,11 +85,16 @@
       args:
         chdir: /home/aviberger/bootcamp-app
 
-    - name: make weight_tracker start at system restart
+    - name: run pm2 startup
+      command: pm2 startup
+      args:
+        chdir: /home/aviberger/bootcamp-app
+
+    - name: make weight_tracker start at system restart with pm2 script
       become: yes
-      command: pm2 startup systemd
-      environment:
-        PATH: "{{ ansible_env.PATH }}"
+      command: 'env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u aviberger --hp /home/aviberger'
+      args:
+        chdir: /home/aviberger/bootcamp-app
         
     - name: Save PM2 configuration
       command: pm2 save

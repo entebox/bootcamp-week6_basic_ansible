@@ -1,7 +1,3 @@
-#change ansible.cnf file to allow connection without key exchange
-#run ansible command to debug (you can add -vvv to have verbose):
-#ansible-playbook -i hosts ~/ansible/playbooks/playbook.yml -u aviberger --step
-
 - name: Deploy Weight Tracker
   hosts: webservers 
   

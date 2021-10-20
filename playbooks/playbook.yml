@@ -18,6 +18,8 @@
      oktaUrl: '<  add parameter here  >'
      oktaClientID: '<  add parameter here  >'
      oktaSecret: '<  add parameter here  >'
+     #pm2 username
+     pm2Username: '<  add parameter here  >'
      
   tasks:
     - name: Creates directory
@@ -59,6 +61,7 @@
       - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)COOKIE_ENCRYPT_PWD(.*)$", replace: "{{ cookie }}"}
 
     - name: Add repository
+      become: yes
       shell: curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
       args:
         warn: no
@@ -121,9 +124,7 @@
 
     - name: make weight_tracker start at system restart with pm2 script
       become: yes
-      command: 'env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u aviberger --hp /home/aviberger'
-      args:
-        chdir: '{{ homeDir }}/{{ appDir }}'
+      command: 'env PATH=$PATH:/usr/bin {{ pm2Username }} startup systemd -u {{ pm2Username }} --hp {{ pm2Username }}'
         
     - name: Save PM2 configuration
       command: pm2 save

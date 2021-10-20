@@ -2,15 +2,27 @@
   hosts: webservers 
   
   vars:
+     #directories
      homeDir: /home/aviberger
      appDir: bootcamp-app
-     repo: https://github.com/entebox/bootcamp-app.git
+     #github
+     repo: 'https://github.com/entebox/bootcamp-app.git'
      branch: week5-bonusB
+     #env file - replace to the right parameters in each field
+     pghost: '<  add parameter here  >'
+     pgusername: '<  add parameter here  >'
+     pgdatabase: '<  add parameter here  >'
+     pgpassword: '<  add parameter here  >'
+     hostUrl: '<  add parameter here  >'
+     cookie: '<  add parameter here  >'
+     oktaUrl: '<  add parameter here  >'
+     oktaClientID: '<  add parameter here  >'
+     oktaSecret: '<  add parameter here  >'
      
   tasks:
     - name: Creates directory
       file:
-        path: {{ homeDir }}/{{ appDir }}
+        path: '{{ homeDir }}/{{ appDir }}'
         state: directory
 
     - name: Update apt-get repo and cache
@@ -23,12 +35,28 @@
 
     - name: clone of a single branch
       ansible.builtin.git:
-        repo: {{ repo }}
-        dest: {{ homeDir }}/{{ appDir }}
+        repo: '{{ repo }}'
+        dest: '{{ homeDir }}/{{ appDir }}'
         clone: yes
         update: yes
         single_branch: yes
-        version: {{ branch }} ###change branch to the one that fits okta credentials 
+        version: '{{ branch }}' 
+
+    - name: replace env credentials
+      replace:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp1 }}"
+        replace: "{{ item.replace }}"
+      with_items:
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)PGHOST(.*)$", replace: "{{ pghost }}"}
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)PGUSERNAME(.*)$", replace: "{{ pgusername }}"}
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)PGDATABASE(.*)$", replace: "{{ pgdatabase }}"}
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)PGPASSWORD(.*)$", replace: "{{ pgpassword }}"}
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)HOST_URL(.*)$", replace: "{{ hostUrl }}"}
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)OKTA_ORG_URL(.*)$", replace: "{{ oktaUrl }}"}
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)OKTA_CLIENT_ID(.*)$", replace: "{{ oktaClientID }}"}
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)OKTA_CLIENT_SECRET(.*)$", replace: "{{ oktaSecret }}"}
+      - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)COOKIE_ENCRYPT_PWD(.*)$", replace: "{{ cookie }}"}
 
     - name: Add repository
       shell: curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
@@ -46,7 +74,7 @@
       become: yes
       command: "npm install {{ item }}"
       args:
-        chdir: {{ homeDir }}/{{ appDir }}
+        chdir: '{{ homeDir }}/{{ appDir }}'
       with_items:
         - '@hapi/hapi@19'
         - '@hapi/bell@12' 
@@ -63,39 +91,39 @@
       become: yes
       command: "npm install --save-dev nodemon@2"
       args:
-        chdir: {{ homeDir }}/{{ appDir }}
+        chdir: '{{ homeDir }}/{{ appDir }}'
 
     - name: initiate npm on working folder
       shell: npm init -y
       args:
-        chdir: {{ homeDir }}/{{ appDir }}
+        chdir: '{{ homeDir }}/{{ appDir }}'
 
     - name: initiate the database
       command: 'npm run initdb'
       args:
-        chdir: {{ homeDir }}/{{ appDir }}
+        chdir: '{{ homeDir }}/{{ appDir }}'
 
     - name: install PM2
       become: yes
       command: "npm install pm2 -g"
       args:
-        chdir: {{ homeDir }}/{{ appDir }}
+        chdir: '{{ homeDir }}/{{ appDir }}'
 
     - name: run the application
       command: 'pm2 start "npm run dev" --name weight_tracker'
       args:
-        chdir: {{ homeDir }}/{{ appDir }}
+        chdir: '{{ homeDir }}/{{ appDir }}'
 
     - name: run pm2 startup
       command: pm2 startup
       args:
-        chdir: {{ homeDir }}/{{ appDir }}
+        chdir: '{{ homeDir }}/{{ appDir }}'
 
     - name: make weight_tracker start at system restart with pm2 script
       become: yes
       command: 'env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u aviberger --hp /home/aviberger'
       args:
-        chdir: {{ homeDir }}/{{ appDir }}
+        chdir: '{{ homeDir }}/{{ appDir }}'
         
     - name: Save PM2 configuration
       command: pm2 save

@@ -9,17 +9,17 @@
      repo: 'https://github.com/entebox/bootcamp-app.git'
      branch: week5-bonusB
      #env file - replace to the right parameters in each field
-     pghost: 'PGHOST=postgvcw6prod.postgres.database.azure.com'
-     pgusername: 'PGUSERNAME=postgres@postgvcw6prod'
-     pgdatabase: 'PGDATABASE=postgres'
-     pgpassword: 'PGPASSWORD=p@ssw0rd42'
-     hostUrl: 'HOST_URL=http://104.210.13.172:8080'
-     cookie: 'COOKIE_ENCRYPT_PWD=superAwesomePasswordStringThatIsAtLeast32CharactersLong!'
-     oktaUrl: 'OKTA_ORG_URL=https://dev-90406841.okta.com'
-     oktaClientID: 'OKTA_CLIENT_ID=0oa2akedj0T8dIEEI5d7'
-     oktaSecret: 'OKTA_CLIENT_SECRET=hYChDu3LxrNC05D-hH87-3S1MZsDw8EMEIOcFFO0'
+     pghost: 'PGHOST=< add postgres host name >'
+     pgusername: 'PGUSERNAME=< add postgres user name >'
+     pgdatabase: 'PGDATABASE=< add postgres database name >'
+     pgpassword: 'PGPASSWORD=< add postgres password name >'
+     hostUrl: 'HOST_URL=< add host url: localhost:8080 for example >'
+     cookie: 'COOKIE_ENCRYPT_PWD=< add cookie encrypt password >'
+     oktaUrl: 'OKTA_ORG_URL=< add okta url >'
+     oktaClientID: 'OKTA_CLIENT_ID=< add okta client ID >'
+     oktaSecret: 'OKTA_CLIENT_SECRET=< add okta client secret >'
      #pm2 username
-     pm2Username: 'aviberger'
+     pm2Username: '< add ubuntu user name >'
      
   tasks:
     - name: Creates directory

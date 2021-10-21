@@ -3,11 +3,11 @@
   
   vars:
      #directories
-     homeDir: /home/aviberger
-     appDir: bootcamp-app
+     homeDir: < add home directory: /home/username >
+     appDir: < add app directory name containing the files >
      #github
-     repo: 'https://github.com/entebox/bootcamp-app.git'
-     branch: week5-bonusB
+     repo: < add repo containing the app files including .env file >
+     branch: < add branch name, if not needed, delete line  >
      #env file - replace to the right parameters in each field
      pghost: 'PGHOST=< add postgres host name >'
      pgusername: 'PGUSERNAME=< add postgres user name >'

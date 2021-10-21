@@ -9,17 +9,17 @@
      repo: 'https://github.com/entebox/bootcamp-app.git'
      branch: week5-bonusB
      #env file - replace to the right parameters in each field
-     pghost: '<  add parameter here  >'
-     pgusername: '<  add parameter here  >'
-     pgdatabase: '<  add parameter here  >'
-     pgpassword: '<  add parameter here  >'
-     hostUrl: '<  add parameter here  >'
-     cookie: '<  add parameter here  >'
-     oktaUrl: '<  add parameter here  >'
-     oktaClientID: '<  add parameter here  >'
-     oktaSecret: '<  add parameter here  >'
+     pghost: 'PGHOST=postgvcw6prod.postgres.database.azure.com'
+     pgusername: 'PGUSERNAME=postgres@postgvcw6prod'
+     pgdatabase: 'PGDATABASE=postgres'
+     pgpassword: 'PGPASSWORD=p@ssw0rd42'
+     hostUrl: 'HOST_URL=http://104.210.13.172:8080'
+     cookie: 'COOKIE_ENCRYPT_PWD=superAwesomePasswordStringThatIsAtLeast32CharactersLong!'
+     oktaUrl: 'OKTA_ORG_URL=https://dev-90406841.okta.com'
+     oktaClientID: 'OKTA_CLIENT_ID=0oa2akedj0T8dIEEI5d7'
+     oktaSecret: 'OKTA_CLIENT_SECRET=hYChDu3LxrNC05D-hH87-3S1MZsDw8EMEIOcFFO0'
      #pm2 username
-     pm2Username: '<  add parameter here  >'
+     pm2Username: 'aviberger'
      
   tasks:
     - name: Creates directory
@@ -60,8 +60,7 @@
       - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)OKTA_CLIENT_SECRET(.*)$", replace: "{{ oktaSecret }}"}
       - { path: "{{ homeDir }}/{{ appDir }}/.env", regexp1: "^(.*)COOKIE_ENCRYPT_PWD(.*)$", replace: "{{ cookie }}"}
 
-    - name: Add repository
-      become: yes
+    - name: Add nodejs repository
       shell: curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
       args:
         warn: no
@@ -103,6 +102,7 @@
 
     - name: initiate the database
       command: 'npm run initdb'
+      run_once: true
       args:
         chdir: '{{ homeDir }}/{{ appDir }}'
 
@@ -118,14 +118,11 @@
         chdir: '{{ homeDir }}/{{ appDir }}'
 
     - name: run pm2 startup
-      command: pm2 startup
-      args:
-        chdir: '{{ homeDir }}/{{ appDir }}'
+      become: true
+      command: 'pm2 startup systemd -u {{ pm2Username }} --hp /home/{{ pm2Username }}'
+      environment:
+        PATH: "{{ ansible_env.PATH }}"
+      ignore_errors: True
 
-    - name: make weight_tracker start at system restart with pm2 script
-      become: yes
-      command: 'env PATH=$PATH:/usr/bin {{ pm2Username }} startup systemd -u {{ pm2Username }} --hp {{ pm2Username }}'
-        
     - name: Save PM2 configuration
       command: pm2 save
-      when: pm2_config_apps == True

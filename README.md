@@ -8,6 +8,8 @@ first step:
 
 1. create new app in the okta dev platform : [Free Okta developer account](https://developer.okta.com/) for account registration, login
 2. copy the all the info needed for the .env file (see examle env file below)
+3. fork https://github.com/entebox/bootcamp-app.git to your github page 
+   and use it on the playbook file as variable repo: < add repo containing the app files including .env file >
 
 in order to have first contact between the ansible server to the clients we can use two options:
 1. (which is less secured) change ansible.cnf on folder /etc/ansible to allow connection without key exchanges -

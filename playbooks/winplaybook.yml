@@ -27,13 +27,17 @@
       path: '{{ appDir }}'
       state: directory
   
-  - name: download git-client
-    win_get_url:
-      url: 'https://github.com/msysgit/msysgit/releases/download/Git-1.9.5-preview20150319/Git-1.9.5-preview20150319.exe'
-      dest: 'C:\Windows\Temp\Git-1.9.5-preview20150319.exe'
-
-  - name: install git-client
-    raw: 'C:\Windows\Temp\Git-1.9.5-preview20150319.exe /SILENT /COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh"'
+  - name: Install chocolatey
+    win_chocolatey:
+      name:
+        - chocolatey
+        - chocolatey-core.extension
+      state: present
+  
+  - name: Install git
+    win_chocolatey:
+      name: git
+      state: present
   
   - name: clone repository
     raw: 'C:\Program Files (x86)\Git\bin\git.exe clone https://github.com/entebox/bootcamp-app.git {{ appDir }}'
@@ -53,13 +57,6 @@
       - { path: "{{ appDirenv }}", regexp1: "^(.*)OKTA_CLIENT_ID(.*)$", replace: "{{ oktaClientID }}"}
       - { path: "{{ appDirenv }}", regexp1: "^(.*)OKTA_CLIENT_SECRET(.*)$", replace: "{{ oktaSecret }}"}
       - { path: "{{ appDirenv }}", regexp1: "^(.*)COOKIE_ENCRYPT_PWD(.*)$", replace: "{{ cookie }}"}
-
-  - name: Install chocolatey
-    win_chocolatey:
-      name:
-        - chocolatey
-        - chocolatey-core.extension
-      state: present
     
   - name: install nodejs 14
     ansible.windows.win_shell: choco install nodejs --version=14.18.1

@@ -36,15 +36,7 @@
     raw: 'C:\Windows\Temp\Git-1.9.5-preview20150319.exe /SILENT /COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh"'
   
   - name: clone repository
-    win_command: >
-      "C:\Program Files (x86)\Git\bin\git.exe"
-      "--no-pager"
-      "clone"
-      "https://github.com/entebox/bootcamp-app.git"
-      "{{ appDir }}"
-      "--branch"
-      "week5-bonusB"
-      "--recursive"
+    raw: 'C:\Program Files (x86)\Git\bin\git.exe clone https://github.com/entebox/bootcamp-app.git {{ appDir }}'
 
   - name: replace env credentials
     community.windows.win_lineinfile:

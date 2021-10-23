@@ -37,7 +37,7 @@
   
   - name: clone repository
     win_command: >
-      "C:\Program Files\Git\bin\git.exe"
+      "C:\Program Files (x86)\Git\bin\git.exe"
       "--no-pager"
       "clone"
       "https://github.com/entebox/bootcamp-app.git"

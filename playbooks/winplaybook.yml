@@ -22,12 +22,24 @@
        oktaSecret: 'OKTA_CLIENT_SECRET=J4mxCOqJr5xwtqvkgCt2bzOhjx2XdQr5HDJj1Seh'
 
   tasks:
+  
+  - name: Firewall rule to allow port 8080
+    community.windows.win_firewall_rule:
+      name: weighttracker
+      localport: 8080
+      action: allow
+      direction: in
+      protocol: tcp
+      state: present
+      enabled: yes
+  
   - name: create directory structure
     ansible.windows.win_file:
       path: '{{ appDir }}'
       state: directory
   
   - name: Install chocolatey
+    become_method: runas
     win_chocolatey:
       name:
         - chocolatey
@@ -35,6 +47,7 @@
       state: present
   
   - name: Install git
+    become_method: runas
     raw: choco install git.install -yfd
   
   - name: clone repository
@@ -57,20 +70,25 @@
       - { path: "{{ appDirenv }}", regexp1: "^(.*)COOKIE_ENCRYPT_PWD(.*)$", replace: "{{ cookie }}"}
     
   - name: Install nodejs 14
+    become_method: runas
     ansible.windows.win_shell: choco install nodejs-lts -yfd
 
   - name: Install python 3
+    become_method: runas
     ansible.windows.win_shell: 'choco install python --version=3.9.5 -yfd'
   
   - name: Install MSBuild
+    become_method: runas
     ansible.windows.win_shell: 'choco install visualstudio2019buildtools -yfd'
 
   - name: initiate npm on working directory
+    become_method: runas
     ansible.windows.win_shell: npm init -y
     args:
       chdir: '{{ appDir }}'
 
   - name: install dependencies
+    become_method: runas
     ansible.windows.win_shell: "npm install {{ item }}"
     args:
       chdir: '{{ appDir }}'
@@ -89,4 +107,5 @@
       - 'qckwinsvc -g'
   
   - name: install app as service
+    become_method: runas
     ansible.windows.win_shell: 'qckwinsvc --name "weighttracker" --description "weighttracker" --script "{{ appDir }}" --startImmediately'

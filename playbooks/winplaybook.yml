@@ -38,7 +38,7 @@
     raw: choco install git.install -yfd
   
   - name: clone repository
-    raw: 'C:\Program Files (x86)\Git\bin\git.exe clone https://github.com/entebox/bootcamp-app.git {{ appDir }}'
+    raw: 'git clone https://github.com/entebox/bootcamp-app.git {{ appDir }}'
 
   - name: replace env credentials
     community.windows.win_lineinfile:

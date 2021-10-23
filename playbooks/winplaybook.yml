@@ -1,0 +1,122 @@
+#install weight tracker app
+---
+- name: install the app
+  hosts: windowsservers
+
+  vars:
+       #directories
+       appDir: C:\Projects\bootcamp-app
+       #github
+       repo: 'https://github.com/entebox/bootcamp-app.git'
+       branch: week5-bonusB
+       #env file - replace to the right parameters in each field
+       pghost: 'PGHOST=postgvcw6stag.postgres.database.azure.com'
+       pgusername: 'PGUSERNAME=postgres@postgvcw6stag'
+       pgdatabase: 'PGDATABASE=postgres'
+       pgpassword: 'PGPASSWORD=p@ssw0rd42'
+       hostUrl: 'HOST_URL=http://20.69.254.13:8080'
+       cookie: 'COOKIE_ENCRYPT_PWD=superAwesomePasswordStringThatIsAtLeast32CharactersLong!'
+       oktaUrl: 'OKTA_ORG_URL=https://dev-90406841.okta.com'
+       oktaClientID: 'OKTA_CLIENT_ID=0oa2aiikmyWRVIZmg5d7'
+       oktaSecret: 'OKTA_CLIENT_SECRET=J4mxCOqJr5xwtqvkgCt2bzOhjx2XdQr5HDJj1Seh'
+
+  tasks:
+  - name: create directory structure
+    ansible.windows.win_file:
+      path: {{ appDir }}
+      state: directory
+  
+  - name: download and install git client
+  win_get_url:
+    url: 'https://github.com/msysgit/msysgit/releases/download/Git-1.9.5-preview20150319/Git-1.9.5-preview20150319.exe'
+    dest: 'C:\Windows\Temp\Git-1.9.5-preview20150319.exe'
+
+  - name: install git-client
+    raw: 'C:\Windows\Temp\Git-1.9.5-preview20150319.exe /SILENT /COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh"'
+  
+  - name: clone repository
+  win_command: >
+    "C:\Program Files\Git\bin\git.exe"
+    "--no-pager"
+    "clone"
+    "https://github.com/entebox/bootcamp-app.git"
+    "{{ appDir }}"
+    "--branch"
+    "week5-bonusB"
+    "--recursive"
+    
+  - name: replace env credentials
+  community.windows.win_lineinfile:
+    replace:
+      path: "{{ item.path }}"
+      regexp: "{{ item.regexp1 }}"
+      replace: "{{ item.replace }}"
+   with_items:
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)PGHOST(.*)$", replace: "{{ pghost }}"}
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)PGUSERNAME(.*)$", replace: "{{ pgusername }}"}
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)PGDATABASE(.*)$", replace: "{{ pgdatabase }}"}
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)PGPASSWORD(.*)$", replace: "{{ pgpassword }}"}
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)HOST_URL(.*)$", replace: "{{ hostUrl }}"}
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)OKTA_ORG_URL(.*)$", replace: "{{ oktaUrl }}"}
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)OKTA_CLIENT_ID(.*)$", replace: "{{ oktaClientID }}"}
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)OKTA_CLIENT_SECRET(.*)$", replace: "{{ oktaSecret }}"}
+      - { path: "{{ appDir }}\.env", regexp1: "^(.*)COOKIE_ENCRYPT_PWD(.*)$", replace: "{{ cookie }}"}
+
+  - name: Install NodeJS
+  strategy: free
+  serial:
+    - "100%"
+  roles:
+    - role: ansible-role-install-nodejs
+      nodejs_major_version: 14
+
+  - name: Install chocolatey
+  win_chocolatey:
+      name:
+        - chocolatey
+        - chocolatey-core.extension
+      state: present
+  
+  - name: Install python using Chocolatey
+      script: installpython.ps1 universe
+      register: out
+    - debug: var=out.stdout_lines
+  
+  - name: Install MSBuild
+  ansible.windows.win_package:
+    path: https://download.visualstudio.microsoft.com/download/pr/9665567e-f580-4acd-85f2-bc94a1db745f/vs_BuildTools.exe
+    product_id: '{D1437F51-786A-4F57-A99C-F8E94FBA1BD8}'
+    arguments:
+    - --norestart
+    - --passive
+    - --wait
+    - --add
+    - Microsoft.Net.Component.4.6.1.TargetingPack
+    - --add
+    - Microsoft.Net.Component.4.6.TargetingPack
+
+  - name: initiate npm on working directory
+  ansible.windows.win_shell: npm init -y
+  args:
+    chdir: '{{ appDir }}'
+
+  - name: install dependencies
+  ansible.windows.win_shell: "npm install {{ item }}"
+  args:
+    chdir: '{{ appDir }}'
+  with_items:
+    - '@hapi/hapi@19'
+    - '@hapi/bell@12' 
+    - '@hapi/boom@9'
+    - '@hapi/cookie@11' 
+    - '@hapi/inert@6'
+    - '@hapi/joi@17' 
+    - '@hapi/vision@6' 
+    - 'dotenv@8'
+    - 'ejs@3' 
+    - 'postgres@1'
+    - '--save-dev nodemon@2'
+    - 'qckwinsvc -g'
+  
+    - name: install app as service
+  ansible.windows.win_shell: 'qckwinsvc --name "weighttracker" --description "weighttracker" --script "{{ appDir }}" --startImmediately'

@@ -56,11 +56,11 @@
       - { path: "{{ appDirenv }}", regexp1: "^(.*)OKTA_CLIENT_SECRET(.*)$", replace: "{{ oktaSecret }}"}
       - { path: "{{ appDirenv }}", regexp1: "^(.*)COOKIE_ENCRYPT_PWD(.*)$", replace: "{{ cookie }}"}
     
-  - name: install nodejs 14
-    ansible.windows.win_shell: choco install nodejs --version=14.18.1
+  - name: Install nodejs 14
+    ansible.windows.win_shell: choco install nodejs-lts -yfd
 
-  - name: Install python using Chocolatey
-    script: installpython.ps1 universe
+  - name: Install python 3
+    ansible.windows.win_shell: 'choco install python --version=3.9.5 -yfd'
   
   - name: Install MSBuild
     ansible.windows.win_package:

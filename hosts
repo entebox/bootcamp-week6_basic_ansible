@@ -18,9 +18,9 @@
 # Ex 2: A collection of hosts belonging to the 'webservers' group:
 
 [webservers]
-websrv1 ansible_host=192.168.1.5 ansible_ssh_pass=<add password here>
-websrv2 ansible_host=192.168.1.6 ansible_ssh_pass=<add password here>
-websrv3 ansible_host=192.168.1.4 ansible_ssh_pass=<add password here>
+< server name > ansible_host=< server IP > ansible_ssh_pass=<add password here>
+< server name > ansible_host=< server IP > ansible_ssh_pass=<add password here>
+< server name > ansible_host=< server IP > ansible_ssh_pass=<add password here>
 
 # If you have multiple hosts following a pattern, you can specify
 # them like this:

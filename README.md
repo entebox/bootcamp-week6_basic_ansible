@@ -3,7 +3,7 @@
 this ansible playbook will provision servers within the network with the weight tracker app 
 and also will use SSO with the okta service
 
-# the steps
+# the steps for staging and production environment
 first step:
 
 1. create new app in the okta dev platform : [Free Okta developer account](https://developer.okta.com/) for account registration, login
@@ -41,17 +41,48 @@ OKTA_CLIENT_ID=< okta client id >
 OKTA_CLIENT_SECRET=< okta client secret >
 ```
 
-run `ansible-playbook -i hosts <location of the hosts> <location of playbook> -u <username>`
+run
+
+`ansible-playbook -i hosts <location of the hosts> <location of playbook> -u <username>`
   
 ### you can add few flags for debugging:
 this command will show debugging output 
+
 `ansible-playbook -i hosts <location of the hosts> <location of playbook> -u <username> -vvv`
 
 this command will ask you to confirm each step
+
 `ansible-playbook -i hosts <location of the hosts> <location of playbook> -u <username> --step`
 
 this command will start the playbook on the requested task name
+
 `ansible-playbook -i hosts <location of the hosts> <location of playbook> -u <username> --start-at-task:"<name of the task>"`
+
+# the steps for POC environment
+
+on windows machine:
+
+install winrm listener
+
+https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html
+
+On the ansible server preparations:
+
+`sudo apt install python3-pip`
+
+`pip install "pywinrm>=0.2.2"`
+
+https://access.redhat.com/solutions/3356681
+
+install role for nodejs install
+
+`ansible-galaxy install don_rumata.ansible_role_install_nodejs`
+
+`ansible-galaxy collection install community.windows`
+
+`ansible-galaxy collection install chocolatey.chocolatey`
+
+https://github.com/don-rumata/ansible-role-install-nodejs
 
 ## about the application:
 # Node.js Weight Tracker

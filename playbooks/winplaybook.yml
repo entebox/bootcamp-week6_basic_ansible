@@ -80,6 +80,10 @@
   - name: Install MSBuild
     become_method: runas
     ansible.windows.win_shell: 'choco install visualstudio2019buildtools -yfd'
+    ignore_errors: True
+    
+  - name: Reboot
+    ansible.windows.win_reboot: 
 
   - name: initiate npm on working directory
     become_method: runas

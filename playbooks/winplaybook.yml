@@ -114,3 +114,7 @@
   - name: install app as service
     become_method: runas
     ansible.windows.win_shell: 'qckwinsvc --name "weighttracker" --description "weighttracker" --script "{{ appDir }}" --startImmediately'
+    
+  - name: start the service
+    become_method: runas
+    ansible.windows.win_shell: "net start weighttracker"

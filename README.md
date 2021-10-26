@@ -84,7 +84,7 @@ On the ansible server preparations:
 
 https://access.redhat.com/solutions/3356681
 
-install role for nodejs install
+install the roles:
 
 `ansible-galaxy install don_rumata.ansible_role_install_nodejs`
 

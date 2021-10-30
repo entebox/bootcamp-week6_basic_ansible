@@ -1,5 +1,5 @@
      #directories
-     homeDir: < add home directory: /home/username >
+     homeDir: /home/{{ whoami.stdout }}
      appDir: < add app directory name containing the files >
      #github
      repo: < add repo containing the app files including .env file >

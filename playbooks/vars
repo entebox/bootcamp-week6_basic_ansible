@@ -1,0 +1,18 @@
+     #directories
+     homeDir: < add home directory: /home/username >
+     appDir: < add app directory name containing the files >
+     #github
+     repo: < add repo containing the app files including .env file >
+     branch: < add branch name, if not needed, delete line  >
+     #env file - replace to the right parameters in each field
+     pghost: 'PGHOST=< add postgres host name >'
+     pgusername: 'PGUSERNAME=< add postgres user name >'
+     pgdatabase: 'PGDATABASE=< add postgres database name >'
+     pgpassword: 'PGPASSWORD=< add postgres password name >'
+     hostUrl: 'HOST_URL=< add host url: localhost:8080 for example >'
+     cookie: 'COOKIE_ENCRYPT_PWD=< add cookie encrypt password >'
+     oktaUrl: 'OKTA_ORG_URL=< add okta url >'
+     oktaClientID: 'OKTA_CLIENT_ID=< add okta client ID >'
+     oktaSecret: 'OKTA_CLIENT_SECRET=< add okta client secret >'
+     #pm2 username
+     pm2Username: '< add ubuntu user name >'

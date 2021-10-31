@@ -1,6 +1,8 @@
 - name: Deploy Weight Tracker
   hosts: webservers 
-
+  vars_files:
+    - "./vars"
+    
   tasks:
     - name: Run whoami without become
       command: whoami

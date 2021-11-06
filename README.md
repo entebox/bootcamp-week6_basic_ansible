@@ -1,3 +1,7 @@
+## branch week7-CICD:
+this branch is directed to azure devops. all variables are stored in Library or azure vault
+
+
 ## configuration management example with ansible
 
 this ansible playbook will provision servers within the network with the weight tracker app 
